@@ -1,0 +1,859 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>حاسبة التغذية وحمل التدريب والمكملات الرياضية</title>
+  <style>
+    :root {
+      --primary: #087f5b;
+      --primary-hover: #066548;
+      --secondary: #3b5bdb;
+      --secondary-hover: #304acf;
+      --accent: #d9480f;
+      --bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --table-header: #e6fcf5;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --table-header: #115e59;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 0;
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo-container img {
+      max-height: 65px;
+      max-width: 180px;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--primary);
+      font-size: 1.6rem;
+    }
+
+    .theme-lang-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 8px;
+      color: var(--primary);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 13px;
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+    }
+
+    input, select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 9px 11px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13.5px;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(8, 127, 91, 0.15);
+    }
+
+    .actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: var(--primary);
+      color: #fff;
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 18px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 13.5px;
+      transition: opacity 0.2s;
+    }
+
+    button:hover { opacity: 0.9; }
+    button.secondary { background: var(--secondary); }
+    button.danger { background: #e03131; }
+    button.outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .stat-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .stat-box .val {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin-top: 3px;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin-top: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card-bg);
+      font-size: 13px;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px;
+      text-align: inherit;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--table-header);
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .timing-box {
+      background: rgba(8, 127, 91, 0.08);
+      border-right: 4px solid var(--primary);
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 15px;
+      font-size: 13px;
+    }
+
+    [dir="ltr"] .timing-box {
+      border-right: none;
+      border-left: 4px solid var(--primary);
+    }
+
+    .logo-upload-box {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    @media print {
+      body { background: #fff; color: #000; }
+      .wrap { max-width: 100%; margin: 0; padding: 0; }
+      .no-print { display: none !important; }
+      .card { box-shadow: none; border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; }
+      .logo-container img { display: block !important; max-height: 70px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top-bar">
+    <div class="logo-container">
+      <img id="logoPreview" src="" alt="Logo" style="display:none;">
+      <h1 id="txt-title">حاسبة التغذية وحمل التدريب والمكملات</h1>
+    </div>
+    <div class="theme-lang-controls no-print">
+      <button class="outline" onclick="toggleTheme()" id="btn-theme">🌙 الوضع الداكن</button>
+      <button class="outline" onclick="toggleLang()" id="btn-lang">English 🌐</button>
+    </div>
+  </div>
+
+  <div class="card no-print">
+    <h2 id="txt-player-data">بيانات اللاعب والتمرين والشعار</h2>
+    <div class="grid">
+      <div><label id="lbl-name">اسم اللاعب</label><input id="name" placeholder="اسم اللاعب"></div>
+      <div>
+        <label id="lbl-sex">الجنس</label>
+        <select id="sex">
+          <option value="male" id="opt-male">ذكر</option>
+          <option value="female" id="opt-female">أنثى</option>
+        </select>
+      </div>
+      <div><label id="lbl-age">العمر</label><input id="age" type="number" value="25"></div>
+      <div><label id="lbl-weight">الوزن (كغم)</label><input id="weight" type="number" value="75"></div>
+      <div><label id="lbl-height">الطول (سم)</label><input id="height" type="number" value="175"></div>
+      
+      <div>
+        <label id="lbl-sport">نوع الرياضة</label>
+        <select id="sport">
+          <option value="bodybuilding" selected id="opt-bb">كمال أجسام / بناء عضل</option>
+          <option value="crossfit" id="opt-cf">كروسفت / لياقة شاقة</option>
+          <option value="football" id="opt-fb">كرة قدم / رياضات جماعية</option>
+          <option value="powerlifting" id="opt-pl">رفع أثقال / قوة بدنية</option>
+          <option value="endurance" id="opt-end">تحمّل / ماراثون</option>
+        </select>
+      </div>
+
+      <div>
+        <label id="lbl-job">النشاط اليومي (العمل)</label>
+        <select id="job">
+          <option value="1.2" id="opt-j1">مكتبي / قليل الحركة</option>
+          <option value="1.35" id="opt-j2">وقوف وحركة خفيفة</option>
+          <option value="1.5" id="opt-j3">عمل متوسط الحركة</option>
+          <option value="1.65" id="opt-j4">عمل بدني شاق</option>
+        </select>
+      </div>
+
+      <div>
+        <label id="lbl-intensity">شدة الحمل التدريبي اليومي</label>
+        <select id="intensity">
+          <option value="1.0" id="opt-i1">استشفاء / راحة</option>
+          <option value="1.15" id="opt-i2">تمرين خفيف إلى متوسط</option>
+          <option value="1.30" selected id="opt-i3">تمرين شديد (60-90 دقيقة)</option>
+          <option value="1.45" id="opt-i4">تمرين شديد جداً / حصتين باليوم</option>
+        </select>
+      </div>
+
+      <div>
+        <label id="lbl-goal">الهدف الرئيسي</label>
+        <select id="goal">
+          <option value="loss" id="opt-g1">إنقاص الوزن (-450 سعرة)</option>
+          <option value="maintain" selected id="opt-g2">المحافظة على الوزن</option>
+          <option value="gain" id="opt-g3">زيادة الكتلة (+350 سعرة)</option>
+        </select>
+      </div>
+
+      <div>
+        <label id="lbl-logo">شعار النادي / العيادة الخاص بك</label>
+        <div class="logo-upload-box">
+          <input type="file" id="logoInput" accept="image/*" onchange="loadLogo(event)">
+          <button class="danger" style="padding: 8px 12px;" onclick="removeLogo()" title="حذف الشعار">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button onclick="calculate()" id="btn-calc">احسب وأنشئ البرنامج الأسبوعي والمكملات</button>
+      <button class="secondary" onclick="saveExcel()" id="btn-excel">حفظ البيانات في Excel</button>
+      <button class="outline" onclick="window.print()" id="btn-print">طباعة / حفظ PDF</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 id="txt-results-header">نتائج التقييم الغذائي وتأثير حمل التدريب</h2>
+    <div id="result">
+      <p style="color: var(--text-muted);" id="txt-prompt">يرجى إدخال البيانات واضغط على "احسب وأنشئ البرنامج الأسبوعي والمكملات".</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 id="txt-supp-header">البروتوكول الخاص بالمكملات الغذائية المطلوبة للعبة</h2>
+    <div class="table-container" id="supplements-container">
+      <p style="color: var(--text-muted);" id="txt-supp-prompt">ستظهر المكملات الموصى بها هنا بناءً على نوع الرياضة والوزن.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 id="txt-plan-header">البرنامج الأسبوعي المحدد بأوزان الغرامات</h2>
+    <div class="no-print actions" style="margin-bottom: 12px;">
+      <button class="outline" onclick="newBank()" id="btn-new-bank">تغيير نوع الوجبات</button>
+      <button class="outline" onclick="makePlan()" id="btn-reorder">إعادة توزيع الأيام</button>
+    </div>
+    <div class="table-container" id="plan">
+      <p style="color: var(--text-muted);" id="txt-plan-prompt">سيظهر الجدول الأسبوعي هنا بعد الحساب.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentLang = 'ar';
+let bank = 0;
+
+const dict = {
+  ar: {
+    title: 'حاسبة التغذية وحمل التدريب والمكملات',
+    playerData: 'بيانات اللاعب والتمرين والشعار',
+    name: 'اسم اللاعب',
+    sex: 'الجنس',
+    male: 'ذكر',
+    female: 'أنثى',
+    age: 'العمر',
+    weight: 'الوزن (كغم)',
+    height: 'الطول (سم)',
+    sport: 'نوع الرياضة',
+    bb: 'كمال أجسام / بناء عضل',
+    cf: 'كروسفت / لياقة شاقة',
+    fb: 'كرة قدم / رياضات جماعية',
+    pl: 'رفع أثقال / قوة بدنية',
+    end: 'تحمّل / ماراثون',
+    job: 'النشاط اليومي (العمل)',
+    j1: 'مكتبي / قليل الحركة',
+    j2: 'وقوف وحركة خفيفة',
+    j3: 'عمل متوسط الحركة',
+    j4: 'عمل بدني شاق',
+    intensity: 'شدة الحمل التدريبي اليومي',
+    i1: 'استشفاء / راحة',
+    i2: 'تمرين خفيف إلى متوسط',
+    i3: 'تمرين شديد (60-90 دقيقة)',
+    i4: 'تمرين شديد جداً / حصتين باليوم',
+    goal: 'الهدف الرئيسي',
+    g1: 'إنقاص الوزن (-450 سعرة)',
+    g2: 'المحافظة على الوزن',
+    g3: 'زيادة الكتلة (+350 سعرة)',
+    logo: 'شعار النادي / العيادة الخاص بك',
+    calc: 'احسب وأنشئ البرنامج الأسبوعي والمكملات',
+    excel: 'حفظ البيانات في Excel',
+    print: 'طباعة / حفظ PDF',
+    resultsHeader: 'نتائج التقييم الغذائي وتأثير حمل التدريب',
+    suppHeader: 'البروتوكول الخاص بالمكملات الغذائية المطلوبة للعبة',
+    planHeader: 'البرنامج الأسبوعي المحدد بأوزان الغرامات',
+    prompt: 'يرجى إدخال البيانات واضغط على "احسب وأنشئ البرنامج الأسبوعي والمكملات".',
+    suppPrompt: 'ستظهر المكملات الموصى بها هنا بناءً على نوع الرياضة والوزن.',
+    planPrompt: 'سيظهر الجدول الأسبوعي هنا بعد الحساب.',
+    newBank: 'تغيير نوع الوجبات',
+    reorder: 'إعادة توزيع الأيام',
+    water: 'الماء اليومي الموصى به',
+    preWorkout: 'وجبة قبل التمرين (ساعة-ساعتين)',
+    postWorkout: 'وجبة بعد التمرين (الاستشفاء)',
+    days: ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
+    meals: ['اليوم', 'الفطور (مع الأوزان)', 'الغداء (مع الأوزان)', 'سناك / قبل التمرين', 'العشاء (مع الأوزان)'],
+    suppHeaders: ['المكمل الغذائي', 'الجرعة الموصى بها', 'التوقيت الأمثل', 'الهدف والفوائد العلمية']
+  },
+  en: {
+    title: 'Nutrition, Training Load & Supplement Calculator',
+    playerData: 'Athlete Data, Training & Custom Logo',
+    name: 'Athlete Name',
+    sex: 'Gender',
+    male: 'Male',
+    female: 'Female',
+    age: 'Age',
+    weight: 'Weight (kg)',
+    height: 'Height (cm)',
+    sport: 'Sport Type',
+    bb: 'Bodybuilding / Muscle Gain',
+    cf: 'CrossFit / High Intensity',
+    fb: 'Football / Team Sports',
+    pl: 'Powerlifting / Strength',
+    end: 'Endurance / Marathon',
+    job: 'Daily Activity (Work)',
+    j1: 'Sedentary / Desk Job',
+    j2: 'Light Standing / Walking',
+    j3: 'Moderate Active Work',
+    j4: 'Heavy Physical Work',
+    intensity: 'Daily Training Intensity',
+    i1: 'Recovery / Rest Day',
+    i2: 'Light to Moderate Session',
+    i3: 'Intense Session (60-90 min)',
+    i4: 'Very High / 2 Sessions Day',
+    goal: 'Primary Goal',
+    g1: 'Fat Loss (-450 kcal)',
+    g2: 'Maintenance',
+    g3: 'Muscle Gain (+350 kcal)',
+    logo: 'Your Club / Clinic Logo',
+    calc: 'Calculate & Generate Plan & Supplements',
+    excel: 'Export to Excel',
+    print: 'Print / Save PDF',
+    resultsHeader: 'Nutritional Assessment & Training Load Impact',
+    suppHeader: 'Sport-Specific Supplementation Protocol',
+    planHeader: 'Weekly Meal Plan with Exact Gram Weights',
+    prompt: 'Please enter data and click "Calculate & Generate Plan & Supplements".',
+    suppPrompt: 'Recommended supplements will appear here based on sport and weight.',
+    planPrompt: 'Weekly meal schedule will appear here after calculation.',
+    newBank: 'Change Meal Variety',
+    reorder: 'Shuffle Days',
+    water: 'Recommended Daily Water',
+    preWorkout: 'Pre-Workout Meal (1-2 hrs before)',
+    postWorkout: 'Post-Workout Meal (Recovery)',
+    days: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    meals: ['Day', 'Breakfast (Gram Weights)', 'Lunch (Gram Weights)', 'Snack / Pre-Workout', 'Dinner (Gram Weights)'],
+    suppHeaders: ['Supplement', 'Recommended Dose', 'Optimal Timing', 'Scientific Purpose & Benefits']
+  }
+};
+
+const supplementsData = {
+  bodybuilding: {
+    ar: [
+      { name: 'واي بروتين (Whey Protein)', dose: '25-30غ (سكوب واحد)', timing: 'بعد التمرين مباشرة أو بين الوجبات', purpose: 'تحفيز البناء العضلي (MPS) وتغطية الاحتياج اليومي من البروتين.' },
+      { name: 'كرياتين مونوهيدرات (Creatine Monohydrate)', dose: '5غ يومياً', timing: 'في أي وقت ثابت يومياً (يفضل بعد التمرين)', purpose: 'زيادة مخازن الفوسفوكرياتين، القوة الانفجارية، والحجم العضلي.' },
+      { name: 'الأحماض الأمينية الأساسية (EAA)', dose: '10-15غ', timing: 'أثناء التمرين أو قبله', purpose: 'تقليل الهدم العضلي وتسريع استشفاء الألياف العضلية.' },
+      { name: 'أوميغا 3 (Omega-3 Fish Oil)', dose: '2000-3000 ملغ (EPA/DHA)', timing: 'مع وجبة تحتوي على الدهون', purpose: 'تقليل التهابات المفاصل وتدعيم صحة القلب وتسريع الاستشفاء.' },
+      { name: 'مستخلص الأشواغاندا (Ashwagandha)', dose: '300-600 ملغ', timing: 'قبل النوم', purpose: 'تقليل هرمون الكورتيزول (الإجهاد) وتحسين جودة النوم والاستشفاء.' }
+    ],
+    en: [
+      { name: 'Whey Protein Isolate/Concentrate', dose: '25-30g (1 scoop)', timing: 'Post-workout or between meals', purpose: 'Stimulates Muscle Protein Synthesis (MPS) and fulfills daily protein goals.' },
+      { name: 'Creatine Monohydrate', dose: '5g daily', timing: 'Any consistent time daily (ideally post-workout)', purpose: 'Increases phosphocreatine stores, explosive power, and muscle cell hydration.' },
+      { name: 'Essential Amino Acids (EAA)', dose: '10-15g', timing: 'Intra-workout or pre-workout', purpose: 'Prevents muscle breakdown and enhances muscle tissue repair.' },
+      { name: 'Omega-3 Fish Oil', dose: '2000-3000mg (combined EPA/DHA)', timing: 'With a fat-containing meal', purpose: 'Reduces joint inflammation, supports cardiac health, and aids recovery.' },
+      { name: 'Ashwagandha KSM-66', dose: '300-600mg', timing: 'Before sleep', purpose: 'Lowers cortisol levels, reduces stress, and improves sleep quality.' }
+    ]
+  },
+  crossfit: {
+    ar: [
+      { name: 'بيتا ألانين (Beta-Alanine)', dose: '3.2 - 6.4غ يومياً', timing: 'مقسمة على مرتين خلال اليوم', purpose: 'زيادة مستوى الكارنوسين العضلي والتخلص من أحماض Lactic Acid للحد من الإجهاد.' },
+      { name: 'كرياتين مونوهيدرات (Creatine)', dose: '5غ يومياً', timing: 'بعد التمرين مع الكربوهيدرات', purpose: 'زيادة القوة وتجديد طاقة ATP في تمارين WOD الشديدة.' },
+      { name: 'أملاح الكهرل (Electrolytes)', dose: '1 حصة (صوديوم، بوتاسيوم، مغنيسيوم)', timing: 'أثناء التمرين وفي الأيام الحارة', purpose: 'منع التشنجات العضلية والحفاظ على التوازن المائي والتركيز.' },
+      { name: 'كافيين (Caffeine Anhydrous)', dose: '200-300 ملغ (أو 3-6 ملغ/كغم)', timing: '30-45 دقيقة قبل التمرين', purpose: 'رفع القدرة الهوائية واللاهوائية والتركيز الذهني أثناء الحصص الشاقة.' },
+      { name: 'سيترولين مالات (Citrulline Malate)', dose: '6-8غ', timing: '45 دقيقة قبل التمرين', purpose: 'زيادة ضخ أكسيد النيتريك (NO)، تحسين ضخ الدم والتخلص من الأمونيا.' }
+    ],
+    en: [
+      { name: 'Beta-Alanine', dose: '3.2 - 6.4g daily', timing: 'Split into two doses daily', purpose: 'Buffers muscle acidity (lactic acid) via carnosine synthesis, delaying fatigue.' },
+      { name: 'Creatine Monohydrate', dose: '5g daily', timing: 'Post-workout with carbohydrates', purpose: 'Restores ATP rapidly during intense CrossFit WODs and lifting movements.' },
+      { name: 'Electrolytes Mix', dose: '1 serving (Sodium, Potassium, Magnesium)', timing: 'Intra-workout', purpose: 'Prevents muscle cramping and maintains neuromuscular firing efficiency.' },
+      { name: 'Caffeine', dose: '200-300mg (3-6mg/kg)', timing: '30-45 mins pre-workout', purpose: 'Enhances endurance, threshold output, and mental drive.' },
+      { name: 'Citrulline Malate', dose: '6-8g', timing: '45 mins pre-workout', purpose: 'Boosts nitric oxide production, vasodilation, and nutrient delivery.' }
+    ]
+  },
+  football: {
+    ar: [
+      { name: 'نترات السائل / نترات البنجر (Beetroot Nitrate)', dose: '400-500 ملغ نترات (70مل عصير بنجر)', timing: '2-3 ساعات قبل المباراة/التمرين', purpose: 'تحسين كفاءة استهلاك الأوكسجين وزيادة الجري عالي الشدة.' },
+      { name: 'كربوهيدرات إلكتروليت سريعة (Cluster Dextrin/Gels)', dose: '30-60غ كربوهيدرات', timing: 'بين الشوطين أو أثناء التمرين الطويل', purpose: 'إعادة تعبئة مخازن الجليكوجين وتفادي هبوط مستوى السكر والجهد.' },
+      { name: 'بيتا ألانين (Beta-Alanine)', dose: '4-6غ يومياً', timing: 'مقسمة مع الوجبات الرئيسيّة', purpose: 'تأخير التعب عند الانطلاقات السريعة المتكررة (Repeated Sprints).' },
+      { name: 'كافيين (Caffeine)', dose: '200 ملغ (حوالي 3ملغ/كغم)', timing: '60 دقيقة قبل المباراة', purpose: 'تحسين سرعة رد الفعل، الدقة، واللياقة البدنية في الشوط الثاني.' },
+      { name: 'بروتين الكازين (Casein Protein)', dose: '30غ', timing: 'قبل النوم', purpose: 'استشفاء عضلي بطيء ومستمر طوال ساعات النوم.' }
+    ],
+    en: [
+      { name: 'Beetroot Juice / Nitrates', dose: '400-500mg nitrate (70ml concentrated)', timing: '2-3 hours pre-match', purpose: 'Enhances oxygen efficiency, endurance, and repeated sprint ability.' },
+      { name: 'Intra-Match Carbohydrate Gel/Drink', dose: '30-60g fast carbs', timing: 'Half-time or during long sessions', purpose: 'Sustains blood glucose levels and prevents Glycogen depletion.' },
+      { name: 'Beta-Alanine', dose: '4-6g daily', timing: 'Split with main meals', purpose: 'Buffers muscle acidosis during repeated high-intensity sprints.' },
+      { name: 'Caffeine', dose: '200mg (~3mg/kg)', timing: '60 minutes pre-match', purpose: 'Improves reaction time, vigilance, and physical output in 2nd half.' },
+      { name: 'Micellar Casein', dose: '30g', timing: 'Before bedtime', purpose: 'Provides slow-release amino acids for overnight muscle repair.' }
+    ]
+  },
+  powerlifting: {
+    ar: [
+      { name: 'كرياتين مونوهيدرات (Creatine)', dose: '5غ يومياً (أو 0.07غ/كغم)', timing: 'ثابت يومياً مع وجبة هيدرات', purpose: 'زيادة أقصى قوة لرفعة واحدة (1RM) وتوفير الطاقة السريعة.' },
+      { name: 'كافيين عالي الشدة (Caffeine)', dose: '300-400 ملغ', timing: '30-45 دقيقة قبل المحاولات الثقيلة', purpose: 'استثارة الجهاز العصبي المركزي (CNS) وتحفيز أقصى انقباض عضلي.' },
+      { name: 'واي بروتين ببتيد (Whey Protein)', dose: '30-40غ', timing: 'بعد رفيع الأثقال مباشرة', purpose: 'إصلاح التمزقات الميكروئية الشديدة في الألياف العضلية.' },
+      { name: 'مكملات دعم المفاصل (Collagen + Vit C)', dose: '10-15غ كولاجين + 500ملغ فيتامين C', timing: '60 دقيقة قبل التمرين', purpose: 'تقوية الأربطة والأوتار وتحمل الأوزان العالية جداً.' },
+      { name: 'مغنيسيوم جليسينات (Magnesium Glycinate)', dose: '300-400 ملغ', timing: 'مساءً قبل النوم', purpose: 'بسط الأعصاب والعضلات المجهدة وتحسين التعافي العصبي.' }
+    ],
+    en: [
+      { name: 'Creatine Monohydrate', dose: '5g daily (or 0.07g/kg)', timing: 'Consistently daily with meal', purpose: 'Maximizes 1RM strength and short-term explosive power production.' },
+      { name: 'Caffeine Anhydrous', dose: '300-400mg', timing: '30-45 mins before heavy singles/sets', purpose: 'Central Nervous System (CNS) stimulation and maximal motor unit recruitment.' },
+      { name: 'Whey Protein Isolate', dose: '30-40g', timing: 'Post-workout', purpose: 'Accelerates structural muscle tissue repair following heavy loading.' },
+      { name: 'Hydrolyzed Collagen + Vitamin C', dose: '10-15g Collagen + 500mg Vit C', timing: '60 mins prior to training', purpose: 'Strengthens tendons and connective tissues under mechanical load.' },
+      { name: 'Magnesium Glycinate', dose: '300-400mg', timing: 'At night before sleep', purpose: 'Eases neuromuscular tension and promotes deep recovery.' }
+    ]
+  },
+  endurance: {
+    ar: [
+      { name: 'جيل كربوهيدرات (Energy Gels / Cyclodextrin)', dose: '30-90غ كربوهيدرات/ساعة', timing: 'كل 20-30 دقيقة أثناء الجري/السباق', purpose: 'الحفاظ على مستويات سكر الدم وتأخير الجدار (Wall Crisis).' },
+      { name: 'مشروب الكهرل والصوديوم (High Sodium Drink)', dose: '500-1000 ملغ صوديوم/لتر', timing: 'قبل وأثناء الماراثون/التمرين', purpose: 'تعويض الجفاف الناتج عن التعرق الشديد وتفادي صدمة نقص الصوديوم.' },
+      { name: 'نترات عصير البنجر (Beetroot Juice)', dose: '500 ملغ نترات يومياً', timing: 'لمدة 3-6 أيام قبل السباق وقبله بساعتين', purpose: 'رفع كفاءة جهاز المايتوكوندريا وضخ الأوكسجين للعضلات.' },
+      { name: 'ببتيدات Glutamine / BCAA', dose: '5-10غ', timing: 'بعد الماراثون/التمرين الطويل', purpose: 'حماية الجهاز المناعي والقولون من الإجهاد البدني الممتد.' },
+      { name: 'حديد + فيتامين C (Iron Chelate)', dose: 'حسب الفحوصات الطبية', timing: 'مع وجبة خفيفة معزولة عن الكالسيوم', purpose: 'دعم تكوين الهيموجلوبين ونقل الأوكسجين في الدم لمسافات طويلة.' }
+    ],
+    en: [
+      { name: 'Carbohydrate Gels / Hydrocarbon Mix', dose: '30-90g carbs per hour', timing: 'Every 20-30 mins during long runs', purpose: 'Prevents glycogen depletion and maintains prolonged power output.' },
+      { name: 'High-Sodium Electrolyte Solution', dose: '500-1000mg Sodium / Liter', timing: 'Pre and intra-endurance session', purpose: 'Prevents hyponatremia, dehydration, and heat cramping.' },
+      { name: 'Beetroot Juice / Inorganic Nitrate', dose: '500mg nitrate daily', timing: '3-6 days loading + 2 hours pre-event', purpose: 'Decreases oxygen cost of submaximal exercise and boosts stamina.' },
+      { name: 'L-Glutamine / EAAs', dose: '5-10g', timing: 'Immediately post-long run', purpose: 'Protects gut barrier integrity and immune system post-exhaustion.' },
+      { name: 'Iron + Vitamin C (If indicated)', dose: 'Based on blood work', timing: 'With a light meal away from calcium', purpose: 'Supports hemoglobin synthesis and oxygen transport capability.' }
+    ]
+  }
+};
+
+const banks = [
+  {
+    f: [
+      '3 بيضات مسلوقة + 100غ خبز تنور + 100غ خيار وطماطة + 200مل لبن',
+      '80غ شوفان + 250مل حليب كامل الدسم + 100غ موز + 15غ عسل',
+      '100غ جبن قريش + 120غ صمون كامل + 100غ خضار طازجة',
+      '150غ حمص بطحينة + 100غ خبز كامل + 100غ خيار',
+      '150غ فول مدمس + 2 بيضة مقلية بـ 5غ زيت زيتون + 90غ خبز',
+      '200مل لبن رايب + 50غ تمر (5-7 حبات) + 30غ مكسرات',
+      'أومليت 3 بيضات مع 50غ خضار + 100غ خبز أسمر'
+    ],
+    l: [
+      '200غ صدر دجاج مشوي + 250غ رز مطبوخ + 100غ سلطة خضراء',
+      '250غ سمك مسقوف/مشوي + 200غ رز بالباقلاء + 100غ سلطة',
+      '180غ لحم بقر صافي + 200غ برغل مطبوخ + 150غ مرق بامية',
+      '200غ صدر دجاج + 250غ رز أبيض + 150غ مرق فاصوليا',
+      '150غ عدس مطبوخ + 200غ رز + 120غ صدر دجاج مشوي',
+      '200غ دجاج محمر + 200غ بطاطا مشوية بالفرن + سلطة',
+      '180غ كباب دجاج مشوي + 250غ رز زعفران + 100غ سلطة'
+    ],
+    s: [
+      '150غ موز + 200مل لبن رائبي',
+      '120غ تفاح + 30غ لوز/جوز نيء',
+      '100غ تونة بالماء + 100غ خيار وشرايح طماطة',
+      '200مل حليب + 40غ تمر',
+      '150غ برتقال + 50غ جبن أبيض خفيف',
+      '150غ بطاطا مسلوقة + 100غ لبن',
+      '130غ موز + 25غ زبدة فول سوداني'
+    ],
+    d: [
+      '120غ تونة مصفاة + 80غ صمون + سلطة خضراء',
+      '200غ شوربة عدس + 60غ خبز محمص + 50غ جبن',
+      '2 بيضة مسلوقة + 150غ بطاطا مسلوقة + سلطة',
+      '150غ صدر دجاج مشوي + 80غ خبز + 100غ خضار',
+      '120غ جبن عرب خفيف + 80غ خبز + خيار وزيتون',
+      '150غ حمص مسبحة + سلطة خضراء كبيرة + 60غ خبز',
+      '150غ سمك مشوي + 150غ خضار سوتيه/مشوية'
+    ]
+  }
+];
+
+function v(x) { return document.getElementById(x).value; }
+function shuffle(a) { return [...a].sort(() => Math.random() - 0.5); }
+
+function toggleTheme() {
+  const current = document.body.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', next);
+  document.getElementById('btn-theme').innerText = next === 'dark' ? '☀️ Light Mode' : '🌙 الوضع الداكن';
+  localStorage.setItem('theme', next);
+}
+
+function toggleLang() {
+  currentLang = currentLang === 'ar' ? 'en' : 'ar';
+  document.documentElement.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+  document.documentElement.setAttribute('lang', currentLang);
+  
+  const t = dict[currentLang];
+  document.getElementById('txt-title').innerText = t.title;
+  document.getElementById('txt-player-data').innerText = t.playerData;
+  document.getElementById('lbl-name').innerText = t.name;
+  document.getElementById('lbl-sex').innerText = t.sex;
+  document.getElementById('opt-male').innerText = t.male;
+  document.getElementById('opt-female').innerText = t.female;
+  document.getElementById('lbl-age').innerText = t.age;
+  document.getElementById('lbl-weight').innerText = t.weight;
+  document.getElementById('lbl-height').innerText = t.height;
+  document.getElementById('lbl-sport').innerText = t.sport;
+  document.getElementById('opt-bb').innerText = t.bb;
+  document.getElementById('opt-cf').innerText = t.cf;
+  document.getElementById('opt-fb').innerText = t.fb;
+  document.getElementById('opt-pl').innerText = t.pl;
+  document.getElementById('opt-end').innerText = t.end;
+  document.getElementById('lbl-job').innerText = t.job;
+  document.getElementById('opt-j1').innerText = t.j1;
+  document.getElementById('opt-j2').innerText = t.j2;
+  document.getElementById('opt-j3').innerText = t.j3;
+  document.getElementById('opt-j4').innerText = t.j4;
+  document.getElementById('lbl-intensity').innerText = t.intensity;
+  document.getElementById('opt-i1').innerText = t.i1;
+  document.getElementById('opt-i2').innerText = t.i2;
+  document.getElementById('opt-i3').innerText = t.i3;
+  document.getElementById('opt-i4').innerText = t.i4;
+  document.getElementById('lbl-goal').innerText = t.goal;
+  document.getElementById('opt-g1').innerText = t.g1;
+  document.getElementById('opt-g2').innerText = t.g2;
+  document.getElementById('opt-g3').innerText = t.g3;
+  document.getElementById('lbl-logo').innerText = t.logo;
+  document.getElementById('btn-calc').innerText = t.calc;
+  document.getElementById('btn-excel').innerText = t.excel;
+  document.getElementById('btn-print').innerText = t.print;
+  document.getElementById('txt-results-header').innerText = t.resultsHeader;
+  document.getElementById('txt-supp-header').innerText = t.suppHeader;
+  document.getElementById('txt-plan-header').innerText = t.planHeader;
+  document.getElementById('btn-new-bank').innerText = t.newBank;
+  document.getElementById('btn-reorder').innerText = t.reorder;
+  document.getElementById('btn-lang').innerText = currentLang === 'ar' ? 'English 🌐' : 'العربية 🌐';
+
+  if (!document.getElementById('result').innerText.includes('BMR')) {
+    document.getElementById('txt-prompt').innerText = t.prompt;
+    document.getElementById('txt-supp-prompt').innerText = t.suppPrompt;
+    document.getElementById('txt-plan-prompt').innerText = t.planPrompt;
+  } else {
+    calculate();
+  }
+}
+
+function loadLogo(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const img = document.getElementById('logoPreview');
+      img.src = evt.target.result;
+      img.style.display = 'block';
+      localStorage.setItem('savedLogo', evt.target.result);
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function removeLogo() {
+  document.getElementById('logoPreview').src = '';
+  document.getElementById('logoPreview').style.display = 'none';
+  document.getElementById('logoInput').value = '';
+  localStorage.removeItem('savedLogo');
+}
+
+function saveData() {
+  const fields = ['name', 'sex', 'age', 'weight', 'height', 'sport', 'job', 'intensity', 'goal'];
+  fields.forEach(f => localStorage.setItem('data_' + f, v(f)));
+}
+
+function loadSavedData() {
+  const fields = ['name', 'sex', 'age', 'weight', 'height', 'sport', 'job', 'intensity', 'goal'];
+  fields.forEach(f => {
+    const val = localStorage.getItem('data_' + f);
+    if (val !== null) document.getElementById(f).value = val;
+  });
+
+  const savedLogo = localStorage.getItem('savedLogo');
+  if (savedLogo) {
+    const img = document.getElementById('logoPreview');
+    img.src = savedLogo;
+    img.style.display = 'block';
+  }
+
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') toggleTheme();
+}
+
+function renderSupplements(sport) {
+  const t = dict[currentLang];
+  const supps = supplementsData[sport][currentLang];
+
+  let html = `
+    <table>
+      <thead>
+        <tr>
+          <th>${t.suppHeaders[0]}</th>
+          <th>${t.suppHeaders[1]}</th>
+          <th>${t.suppHeaders[2]}</th>
+          <th>${t.suppHeaders[3]}</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${supps.map(item => `
+          <tr>
+            <td style="font-weight: bold; color: var(--primary);">${item.name}</td>
+            <td><b>${item.dose}</b></td>
+            <td>${item.timing}</td>
+            <td>${item.purpose}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+
+  document.getElementById('supplements-container').innerHTML = html;
+}
+
+function calculate() {
+  saveData();
+  const t = dict[currentLang];
+  let age = +v('age'), w = +v('weight'), h = +v('height'), sex = v('sex'),
+      sport = v('sport'), job = +v('job'), intensity = +v('intensity'), goal = v('goal');
+
+  let bmr = 10 * w + 6.25 * h - 5 * age + (sex === 'male' ? 5 : -161);
+  let tdee = bmr * job * intensity;
+  let targetCal = tdee + (goal === 'loss' ? -450 : goal === 'gain' ? 350 : 0);
+
+  let proteinFactor = 2.0;
+  let carbRatio = 0.50;
+
+  if (sport === 'bodybuilding') { proteinFactor = 2.2; carbRatio = 0.45; }
+  else if (sport === 'crossfit') { proteinFactor = 2.0; carbRatio = 0.50; }
+  else if (sport === 'football') { proteinFactor = 1.8; carbRatio = 0.55; }
+  else if (sport === 'powerlifting') { proteinFactor = 2.2; carbRatio = 0.40; }
+  else if (sport === 'endurance') { proteinFactor = 1.6; carbRatio = 0.60; }
+
+  let protein = Math.round(w * proteinFactor);
+  let carbs = Math.round((targetCal * carbRatio) / 4);
+  let fat = Math.round((targetCal - (protein * 4) - (carbs * 4)) / 9);
+
+  let bmi = (w / ((h/100) ** 2)).toFixed(1);
+  let waterLiters = ((w * 0.035) + (intensity > 1.2 ? 0.75 : 0.4)).toFixed(1);
+  let workoutExtraCal = Math.round(bmr * job * (intensity - 1.0));
+
+  let preWorkoutCarbs = Math.round(w * 0.8);
+  let postWorkoutProtein = Math.round(w * 0.4);
+  let postWorkoutCarbs = Math.round(w * 1.0);
+
+  let name = v('name') || (currentLang === 'ar' ? 'غير مسمى' : 'Unnamed');
+
+  document.getElementById('result').innerHTML = `
+    <div style="margin-bottom: 12px; font-size: 15px;"><b>${t.name}:</b> ${name} | <b>BMI:</b> ${bmi}</div>
+    <div class="result-grid">
+      <div class="stat-box"><div>BMR</div><div class="val">${Math.round(bmr)}</div></div>
+      <div class="stat-box"><div>Workout Cal</div><div class="val" style="color:var(--accent)">+${workoutExtraCal}</div></div>
+      <div class="stat-box"><div>TDEE</div><div class="val">${Math.round(tdee)}</div></div>
+      <div class="stat-box"><div>Target Cal</div><div class="val" style="color:var(--primary)">${Math.round(targetCal)}</div></div>
+      <div class="stat-box"><div>Protein</div><div class="val">${protein}g</div></div>
+      <div class="stat-box"><div>Carbs</div><div class="val">${carbs}g</div></div>
+      <div class="stat-box"><div>Fat</div><div class="val">${fat}g</div></div>
+      <div class="stat-box"><div>${t.water}</div><div class="val" style="color:var(--secondary)">${waterLiters}L</div></div>
+    </div>
+
+    <div class="timing-box">
+      <b>⏰ Nutrient Timing:</b><br>
+      • <b>${t.preWorkout}:</b> ${preWorkoutCarbs}g carbs + 20g protein.<br>
+      • <b>${t.postWorkout}:</b> ${postWorkoutProtein}g protein + ${postWorkoutCarbs}g carbs.
+    </div>
+  `;
+
+  renderSupplements(sport);
+  makePlan();
+}
+
+function makePlan() {
+  const t = dict[currentLang];
+  let x = banks[bank], f = shuffle(x.f), l = shuffle(x.l), s = shuffle(x.s), d = shuffle(x.d);
+
+  let html = `
+    <table>
+      <thead>
+        <tr>
+          <th>${t.meals[0]}</th>
+          <th>${t.meals[1]}</th>
+          <th>${t.meals[2]}</th>
+          <th>${t.meals[3]}</th>
+          <th>${t.meals[4]}</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${t.days.map((day, i) => `
+          <tr>
+            <th>${day}</th>
+            <td>${f[i]}</td>
+            <td>${l[i]}</td>
+            <td>${s[i]}</td>
+            <td>${d[i]}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+
+  document.getElementById('plan').innerHTML = html;
+}
+
+function newBank() {
+  bank = (bank + 1) % banks.length;
+  makePlan();
+}
+
+function csv(x) { return '"' + String(x ?? '').replaceAll('"', '""') + '"'; }
+
+function saveExcel() {
+  if (document.getElementById('result').innerText.includes('يرجى') || document.getElementById('result').innerText.includes('Please')) {
+    alert('Please calculate first.');
+    return;
+  }
+
+  const t = dict[currentLang];
+  let name = v('name') || 'player';
+  let sport = v('sport');
+
+  let rows = [
+    [t.title],
+    [t.name, name],
+    [t.sex, document.getElementById('sex').selectedOptions[0].text],
+    [t.age, v('age')],
+    [t.weight, v('weight')],
+    [t.height, v('height')],
+    [t.sport, document.getElementById('sport').selectedOptions[0].text],
+    [t.goal, document.getElementById('goal').selectedOptions[0].text],
+    [],
+    [t.suppHeader],
+    t.suppHeaders
+  ];
+
+  const supps = supplementsData[sport][currentLang];
+  supps.forEach(s => {
+    rows.push([s.name, s.dose, s.timing, s.purpose]);
+  });
+
+  rows.push([]);
+  rows.push([t.planHeader]);
+  rows.push(t.meals);
+
+  let currentBank = banks[bank];
+  for (let i = 0; i < t.days.length; i++) {
+    rows.push([
+      t.days[i],
+      currentBank.f[i] || '',
+      currentBank.l[i] || '',
+      currentBank.s[i] || '',
+      currentBank.d[i] || ''
+    ]);
+  }
+
+  let csvContent = '\ufeff' + rows.map(r => r.map(csv).join(',')).join('\n');
+  let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  let a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${name.replace(/\s+/g, '_')}_nutrition_plan.csv`;
+  a.click();
+}
+
+window.onload = loadSavedData;
+</script>
+
+</body>
+</html>
